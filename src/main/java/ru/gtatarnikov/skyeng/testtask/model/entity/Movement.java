@@ -1,6 +1,7 @@
 package ru.gtatarnikov.skyeng.testtask.model.entity;
 
 import jakarta.persistence.*;
+import ru.gtatarnikov.skyeng.testtask.model.enumeration.Status;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +13,9 @@ public class Movement {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movement_id_generator")
     private Long id;
 
-    @Column(name = "action", nullable = false)
-    private String action;
+    @Column(name = "status", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "mailing_id", nullable = false)
@@ -34,12 +36,12 @@ public class Movement {
         this.id = id;
     }
 
-    public String getAction() {
-        return action;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Mailing getMailing() {

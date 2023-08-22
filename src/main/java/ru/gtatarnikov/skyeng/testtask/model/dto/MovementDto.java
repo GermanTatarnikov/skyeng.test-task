@@ -1,11 +1,13 @@
 package ru.gtatarnikov.skyeng.testtask.model.dto;
 
+import ru.gtatarnikov.skyeng.testtask.model.enumeration.Status;
+
 import java.time.LocalDateTime;
 
 public class MovementDto {
     private Long id;
 
-    private String action;
+    private Status status;
 
     private MailingDto mailing;
 
@@ -21,12 +23,12 @@ public class MovementDto {
         this.id = id;
     }
 
-    public String getAction() {
-        return action;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public MailingDto getMailing() {

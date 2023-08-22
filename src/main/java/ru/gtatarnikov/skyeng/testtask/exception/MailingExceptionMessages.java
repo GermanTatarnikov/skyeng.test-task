@@ -10,6 +10,7 @@ public interface MailingExceptionMessages {
     String MAILING_ALREADY_LEFT_WAYPOINT = "Посылка уже покинула почтовое отделение ";
     String MAILING_NOT_IN_WAYPOINT = "Посылка ещё не поступила в почтовое отделение ";
     String MAILING_ALREADY_IN_WAYPOINT = "Посылка уже поступила в почтовое отделение ";
+    String MAILING_NOT_ARRIVED_FIRST = "Посылка ещё не прибыла в изначальное почтовое отделение ";
     String MAILING_MOVEMENT_IS_EMPTY = "История перемещений посылки пуста ";
     String UNKNOWN_EXCEPTION = "Неизвестная ошибка ";
 }

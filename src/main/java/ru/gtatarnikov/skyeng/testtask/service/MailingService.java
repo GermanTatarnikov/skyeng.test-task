@@ -24,10 +24,6 @@ import static ru.gtatarnikov.skyeng.testtask.exception.MailingExceptionMessages.
 
 @Service
 public class MailingService {
-    private static final String ACTION_ARRIVED = "Arrived";
-    private static final String ACTION_LEFT = "Left";
-    private static final String ACTION_RECEIVED = "Received";
-
     @Autowired
     private MailingRepository mailingRepository;
 
@@ -67,12 +63,12 @@ public class MailingService {
 
         Mailing mailingEntity = getMailingEntity(mailingId);
 
-        if (!mailingEntity.getStatus().equals(Status.LEFT_WAYPOINT) &&
+        if (!mailingEntity.getStatus().equals(Status.LEFT) &&
                 !mailingEntity.getStatus().equals(Status.REGISTERED)) {
             if (mailingEntity.getStatus().equals(Status.RECEIVED)) {
                 throw new MailingException(MAILING_ALREADY_RECEIVED);
             }
-            if (mailingEntity.getStatus().equals(Status.ARRIVED_TO_WAYPOINT)) {
+            if (mailingEntity.getStatus().equals(Status.ARRIVED)) {
                 throw new MailingException(MAILING_ALREADY_IN_WAYPOINT);
             }
             throw new MailingException(MAILING_STILL_IN_WAYPOINT);
@@ -81,10 +77,10 @@ public class MailingService {
         PostalOffice postalOfficeEntity = getPostalOfficeEntity(postalOfficeId);
 
         postalOfficeEntity.setRecipientAddress(mailingEntity.getRecipientAddress());
-        mailingEntity.setStatus(Status.ARRIVED_TO_WAYPOINT);
+        mailingEntity.setStatus(Status.ARRIVED);
         mailingRepository.saveAndFlush(mailingEntity);
 
-        saveMovement(mailingEntity, postalOfficeEntity, ACTION_ARRIVED);
+        saveMovement(mailingEntity, postalOfficeEntity);
 
         return mailingMapper.toDto(mailingEntity);
     }
@@ -96,23 +92,23 @@ public class MailingService {
 
         Mailing mailingEntity = getMailingEntity(mailingId);
 
-        if (!mailingEntity.getStatus().equals(Status.ARRIVED_TO_WAYPOINT) &&
-                !mailingEntity.getStatus().equals(Status.REGISTERED)) {
+        if (!mailingEntity.getStatus().equals(Status.ARRIVED)) {
+            if (mailingEntity.getStatus().equals(Status.REGISTERED)) {
+                throw new MailingException(MAILING_NOT_ARRIVED_FIRST);
+            }
             if (mailingEntity.getStatus().equals(Status.RECEIVED)) {
                 throw new MailingException(MAILING_ALREADY_RECEIVED);
             }
-            if (mailingEntity.getStatus().equals(Status.LEFT_WAYPOINT)) {
+            if (mailingEntity.getStatus().equals(Status.LEFT)) {
                 throw new MailingException(MAILING_ALREADY_LEFT_WAYPOINT);
             }
             throw new MailingException(MAILING_NOT_IN_WAYPOINT);
         }
 
-        mailingEntity.setStatus(Status.LEFT_WAYPOINT);
-        mailingEntity.setRecipientAddress(null);
+        mailingEntity.setStatus(Status.LEFT);
+        mailingEntity = mailingRepository.saveAndFlush(mailingEntity);
 
-        saveMovement(mailingEntity, ACTION_ARRIVED, ACTION_LEFT);
-
-        mailingEntity = mailingRepository.save(mailingEntity);
+        saveMovement(mailingEntity, Status.ARRIVED);
 
         return mailingMapper.toDto(mailingEntity);
     }
@@ -126,14 +122,13 @@ public class MailingService {
 
         if (mailingEntity.getStatus().equals(Status.RECEIVED))
             throw new MailingException(MAILING_ALREADY_RECEIVED);
-        if (!mailingEntity.getStatus().equals(Status.ARRIVED_TO_WAYPOINT))
+        if (!mailingEntity.getStatus().equals(Status.ARRIVED))
             throw new MailingException(MAILING_NOT_IN_WAYPOINT);
 
         mailingEntity.setStatus(Status.RECEIVED);
-
         mailingEntity = mailingRepository.saveAndFlush(mailingEntity);
 
-        saveMovement(mailingEntity, ACTION_ARRIVED, ACTION_RECEIVED);
+        saveMovement(mailingEntity, Status.ARRIVED);
 
         return mailingMapper.toDto(mailingEntity);
     }
@@ -162,26 +157,26 @@ public class MailingService {
                 .orElseThrow(() -> new MailingException(MAILING_MOVEMENT_IS_EMPTY));
     }
 
-    private PostalOffice getLastActionPostalOffice(Long mailingId, String action) {
-        return postalOfficeRepository.findById(movementRepository.getLatestPostalOfficeIdByMailingIdAndAction(mailingId, action))
+    private PostalOffice getLastActionPostalOffice(Long mailingId, Status status) {
+        return postalOfficeRepository.findById(movementRepository.getLatestPostalOfficeIdByMailingIdAndStatus(mailingId, status))
                 .orElseThrow(() -> new MailingException(NOT_FOUND_POSTAL_OFFICE));
     }
 
-    private void saveMovement(Mailing mailingEntity, PostalOffice postalOfficeEntity, String currentAction) {
+    private void saveMovement(Mailing mailingEntity, PostalOffice postalOfficeEntity) {
         Movement movementEntity = new Movement();
         movementEntity.setMailing(mailingEntity);
         movementEntity.setPostalOffice(postalOfficeEntity);
         movementEntity.setMovementDateTime(LocalDateTime.now());
-        movementEntity.setAction(currentAction);
+        movementEntity.setStatus(mailingEntity.getStatus());
         movementRepository.save(movementEntity);
     }
 
-    private void saveMovement(Mailing mailingEntity, String actionBefore, String currentAction) {
+    private void saveMovement(Mailing mailingEntity, Status statusBefore) {
         Movement movement = new Movement();
         movement.setMailing(mailingEntity);
-        movement.setPostalOffice(getLastActionPostalOffice(mailingEntity.getId(), actionBefore));
+        movement.setPostalOffice(getLastActionPostalOffice(mailingEntity.getId(), statusBefore));
         movement.setMovementDateTime(LocalDateTime.now());
-        movement.setAction(currentAction);
+        movement.setStatus(mailingEntity.getStatus());
         movementRepository.save(movement);
     }
 }
