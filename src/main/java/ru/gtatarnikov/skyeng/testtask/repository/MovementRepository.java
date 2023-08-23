@@ -13,8 +13,7 @@ import java.util.Optional;
 public interface MovementRepository extends JpaRepository<Movement, Long> {
     Optional<List<Movement>> findAllByMailingId(Long mailingId);
 
-    @Query(value = "select m.postalOffice.id from Movement m where m.mailing.id = ?1 " +
-            "and m.status = ?2 " +
-            "AND m.movementDateTime = (select min(m.movementDateTime) from Movement m)")
+    @Query(value = "select m.postalOffice.id from Movement m " +
+            "where m.movementDateTime = (select min(m.movementDateTime) from Movement m where m.mailing.id = ?1 and m.status = ?2)")
     Long getLatestPostalOfficeIdByMailingIdAndStatus(Long mailingId, Status status);
 }

@@ -1,8 +1,10 @@
 package ru.gtatarnikov.skyeng.testtask.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.gtatarnikov.skyeng.testtask.model.enumeration.MailingType;
 
 public class MailingDto {
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     private MailingType type;

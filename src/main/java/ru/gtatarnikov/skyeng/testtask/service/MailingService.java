@@ -71,7 +71,6 @@ public class MailingService {
             if (mailingEntity.getStatus().equals(Status.ARRIVED)) {
                 throw new MailingException(MAILING_ALREADY_IN_WAYPOINT);
             }
-            throw new MailingException(MAILING_STILL_IN_WAYPOINT);
         }
 
         PostalOffice postalOfficeEntity = getPostalOfficeEntity(postalOfficeId);
@@ -102,7 +101,6 @@ public class MailingService {
             if (mailingEntity.getStatus().equals(Status.LEFT)) {
                 throw new MailingException(MAILING_ALREADY_LEFT_WAYPOINT);
             }
-            throw new MailingException(MAILING_NOT_IN_WAYPOINT);
         }
 
         mailingEntity.setStatus(Status.LEFT);
@@ -157,8 +155,8 @@ public class MailingService {
                 .orElseThrow(() -> new MailingException(MAILING_MOVEMENT_IS_EMPTY));
     }
 
-    private PostalOffice getLastActionPostalOffice(Long mailingId, Status status) {
-        return postalOfficeRepository.findById(movementRepository.getLatestPostalOfficeIdByMailingIdAndStatus(mailingId, status))
+    private PostalOffice getLastStatusPostalOffice(Long mailingId, Status lastStatus) {
+        return postalOfficeRepository.findById(movementRepository.getLatestPostalOfficeIdByMailingIdAndStatus(mailingId, lastStatus))
                 .orElseThrow(() -> new MailingException(NOT_FOUND_POSTAL_OFFICE));
     }
 
@@ -174,7 +172,7 @@ public class MailingService {
     private void saveMovement(Mailing mailingEntity, Status statusBefore) {
         Movement movement = new Movement();
         movement.setMailing(mailingEntity);
-        movement.setPostalOffice(getLastActionPostalOffice(mailingEntity.getId(), statusBefore));
+        movement.setPostalOffice(getLastStatusPostalOffice(mailingEntity.getId(), statusBefore));
         movement.setMovementDateTime(LocalDateTime.now());
         movement.setStatus(mailingEntity.getStatus());
         movementRepository.save(movement);

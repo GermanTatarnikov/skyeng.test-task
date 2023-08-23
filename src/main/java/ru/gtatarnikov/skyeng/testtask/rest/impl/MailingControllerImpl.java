@@ -25,17 +25,17 @@ public class MailingControllerImpl implements MailingController {
     }
 
     @Override
-    public ResponseEntity<?> leftWaypoint(Long id) {
-        return ResponseEntity.ok(mailing.left(id));
+    public ResponseEntity<?> leftWaypoint(Long mailingId) {
+        return ResponseEntity.ok(mailing.left(mailingId));
     }
 
     @Override
-    public ResponseEntity<?> receiving(Long id) {
-        return ResponseEntity.ok(mailing.receiving(id));
+    public ResponseEntity<?> receiving(Long mailingId) {
+        return ResponseEntity.ok(mailing.receiving(mailingId));
     }
 
     @Override
-    public ResponseEntity<?> getHistory(Long id) {
-        return ResponseEntity.ok(mailing.getHistory(id));
+    public ResponseEntity<?> getHistory(Long mailingId) {
+        return ResponseEntity.ok(mailing.getHistory(mailingId));
     }
 }

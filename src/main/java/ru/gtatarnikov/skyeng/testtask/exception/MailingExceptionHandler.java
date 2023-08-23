@@ -13,9 +13,8 @@ import static ru.gtatarnikov.skyeng.testtask.exception.MailingExceptionMessages.
 public class MailingExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ExceptionHandler({MailingException.class})
-    public ResponseEntity<MailingException> handleMailingException(MailingException ex) {
-        ex.printStackTrace();
-        return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleMailingException(MailingException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody
