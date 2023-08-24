@@ -19,7 +19,6 @@ import ru.gtatarnikov.skyeng.testtask.repository.PostalOfficeRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Objects.isNull;
 import static ru.gtatarnikov.skyeng.testtask.exception.MailingExceptionMessages.*;
 
 @Service
@@ -57,10 +56,6 @@ public class MailingService {
 
     @Transactional
     public MailingDto arriving(Long mailingId, Long postalOfficeId) {
-        if (isNull(mailingId) || isNull(postalOfficeId)) {
-            throw new MailingException(NOT_FOUND_ID);
-        }
-
         Mailing mailingEntity = getMailingEntity(mailingId);
 
         if (!mailingEntity.getStatus().equals(Status.LEFT) &&
@@ -86,9 +81,6 @@ public class MailingService {
 
     @Transactional
     public MailingDto left(Long mailingId) {
-        if (isNull(mailingId))
-            throw new MailingException(NOT_FOUND_ID);
-
         Mailing mailingEntity = getMailingEntity(mailingId);
 
         if (!mailingEntity.getStatus().equals(Status.ARRIVED)) {
@@ -113,9 +105,6 @@ public class MailingService {
 
     @Transactional
     public MailingDto receiving(Long mailingId) {
-        if (isNull(mailingId))
-            throw new MailingException(NOT_FOUND_ID);
-
         Mailing mailingEntity = getMailingEntity(mailingId);
 
         if (mailingEntity.getStatus().equals(Status.RECEIVED))
@@ -132,11 +121,6 @@ public class MailingService {
     }
 
     public List<MovementDto> getHistory(Long mailingId) {
-        if (isNull(mailingId))
-            throw new MailingException(NOT_FOUND_ID);
-        if (!mailingRepository.existsById(mailingId))
-            throw new MailingException(NOT_FOUND_MAILING);
-
         return movementMapper.toDtoList(getMovements(mailingId));
     }
 
