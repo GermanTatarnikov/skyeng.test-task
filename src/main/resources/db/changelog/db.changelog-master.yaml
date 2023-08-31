@@ -1,0 +1,201 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-skyeng.yaml
+  - changeSet:
+      id: 1
+      author: postgres
+      changes:
+        - createTable:
+            tableName: mailing
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: recipient_address
+                  type: varchar(255)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: recipient_index
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipient_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: postgres
+      changes:
+        - createTable:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: index
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipient_address
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: 3
+      author: postgres
+      changes:
+        - createTable:
+            tableName: movement
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: mailing_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movement_date_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: postal_office_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 4
+      author: postgres
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: mailing_id
+            baseTableName: movement
+            baseTableSchemaName: public
+            constraintName: fk_movement_mailing
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: mailing
+            referencedTableSchemaName: public
+  - changeSet:
+      id: 5
+      author: postgres
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: postal_office_id
+            baseTableName: movement
+            baseTableSchemaName: public
+            constraintName: fk_movement_postal_office
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: postal_office
+            referencedTableSchemaName: public
+  - changeSet:
+      id: 6
+      author: postgres
+      changes:
+        - insert:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: index
+                  value: "420048"
+              - column:
+                  name: name
+                  value: "Severniy"
+  - changeSet:
+      id: 7
+      author: postgres
+      changes:
+        - insert:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: index
+                  value: "420100"
+              - column:
+                  name: name
+                  value: "Azino-1"
+  - changeSet:
+      id: 8
+      author: postgres
+      changes:
+        - insert:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: index
+                  value: "420101"
+              - column:
+                  name: name
+                  value: "Azino-2"
+  - changeSet:
+      id: 9
+      author: postgres
+      changes:
+        - insert:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: index
+                  value: "420036"
+              - column:
+                  name: name
+                  value: "Kvartala-1"
+  - changeSet:
+      id: 10
+      author: postgres
+      changes:
+        - insert:
+            tableName: postal_office
+            columns:
+              - column:
+                  name: index
+                  value: "420111"
+              - column:
+                  name: name
+                  value: "Moskovskiy-3"
+rollback:
+  - dropTable:
+      tableName: movement, mailing, postal_office

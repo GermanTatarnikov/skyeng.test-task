@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Table(name = "movement")
 public class Movement {
     @Id
-    @SequenceGenerator(name = "movement_id_generator", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movement_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "status", nullable = false)

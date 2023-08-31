@@ -6,8 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "postal_office")
 public class PostalOffice {
     @Id
-    @SequenceGenerator(name = "postal_office_id_generator", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "postal_office_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "index", nullable = false)

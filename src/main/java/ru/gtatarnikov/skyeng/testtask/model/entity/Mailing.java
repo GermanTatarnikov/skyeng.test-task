@@ -8,8 +8,8 @@ import ru.gtatarnikov.skyeng.testtask.model.enumeration.Status;
 @Table(name = "mailing")
 public class Mailing {
     @Id
-    @SequenceGenerator(name = "mailing_id_generator", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mailing_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "type", nullable = false)
